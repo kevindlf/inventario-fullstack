@@ -25,12 +25,13 @@ public class ProductoServicio implements IProductoServicio {
     }
 
     @Override
-    public void guardarProducto(Producto producto) {
-        this.productoRepository.save(producto);
+    public Producto guardarProducto(Producto producto) {
+        return this.productoRepository.save(producto);
     }
 
     @Override
     public void eliminarProductoPorId(Integer idProducto) {
         this.productoRepository.deleteById(idProducto);
     }
+
 }
