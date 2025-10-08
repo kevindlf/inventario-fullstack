@@ -1,10 +1,12 @@
 package org.example.inventarios.Controlador;
 
 import org.example.inventarios.Servicio.ProductoServicio;
+import org.example.inventarios.exepciones.RecursosNoEncontradosExepcion;
 import org.example.inventarios.modelo.Producto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,4 +35,40 @@ public class ProductoControlador {
          return this.productoServicio.guardarProducto(producto);
    }
 
+   @GetMapping("/productos/{id}")
+    public ResponseEntity<Producto>obtenerProductoPorId(@PathVariable int id){
+         Producto producto = this.productoServicio.BuscarProductoPorId(id);
+         if(producto != null){
+             return ResponseEntity.ok(producto);
+         }else{
+             throw new RecursosNoEncontradosExepcion("No se encontró el Id"+ id);
+         }
+   }
+    @PutMapping("/productos/{id}")
+     public ResponseEntity<Producto> actualizarProducto(
+             @PathVariable int id,@RequestBody Producto productoRecibido){
+            Producto producto = this.productoServicio.BuscarProductoPorId(id);
+            if(producto != null){
+                 producto.setDescripcion(productoRecibido.getDescripcion());
+                 producto.setPrecio(productoRecibido.getPrecio());
+                 producto.setExistencia(productoRecibido.getExistencia());
+                 this.productoServicio.guardarProducto(producto);
+                 logger.info("Producto actualizado: " + producto);
+                 return ResponseEntity.ok(producto);
+            }else{
+                 throw new RecursosNoEncontradosExepcion("No se encontró el Id"+ id);
+            }
+    }
+
+    @DeleteMapping("/productos/{id}")
+     public ResponseEntity<Void> eliminarProducto(@PathVariable int id){
+            Producto producto = this.productoServicio.BuscarProductoPorId(id);
+            if(producto != null){
+                 this.productoServicio.eliminarProductoPorId(id);
+                 logger.info("Producto eliminado: " + producto);
+                 return ResponseEntity.noContent().build();
+            }else{
+                 throw new RecursosNoEncontradosExepcion("No se encontró el Id"+ id);
+            }
+    }
 }
